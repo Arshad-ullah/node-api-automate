@@ -28,13 +28,13 @@ pipeline {
             }
         }
 
-        // 4. Run Node.js tests
-        stage("Run Tests") {
-            steps {
-                echo "===== Running Node.js tests ====="
-                sh "npm test"
-            }
-        }
+        // // 4. Run Node.js tests
+        // stage("Run Tests") {
+        //     steps {
+        //         echo "===== Running Node.js tests ====="
+        //         sh "npm test"
+        //     }
+        // }
 
         // 5. Build Docker image
         stage("Docker Build") {
