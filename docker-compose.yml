@@ -1,0 +1,29 @@
+services:
+  node-api:
+    image: node:22-alpine
+    container_name: node-api
+    working_dir: /app
+
+    ports:
+      - "4010:4010"
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    command: sh -c "npm install --omit=dev && node index.js"
+
+    env_file:
+      - .env
+
+    restart: unless-stopped
+
+  web:
+    container_name: landingPage
+    image: nginx:latest
+    ports:
+      - "5555:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+    restart: unless-stopped
+

@@ -1,100 +1,75 @@
-
 pipeline {
     agent any
 
+    // options {
+    //     timestamps()
+    //     disableConcurrentBuilds()
+    //     timeout(time: 15, unit: 'MINUTES')
+    // }
+
+    environment {
+        COMPOSE_PROJECT_NAME = 'node-api'
+        APP_URL = 'http://localhost:4010/users'
+    }
+
     stages {
 
-        // 1. Checkout source code
-        stage("Checkout") {
+        stage('Checkout') {
             steps {
-                echo "===== Checking out source code ====="
+                echo '===== Checking out source code ====='
                 checkout scm
             }
         }
 
-        // 2. Install Node.js dependencies
-        stage("Install Dependencies") {
+        stage('Install Dependencies') {
             steps {
-                echo "===== Installing dependencies ====="
-                sh "npm ci"
+                echo '===== Installing dependencies ====='
+                // Drop --omit=dev if validate.sh runs tests or linters
+                sh 'npm ci'
             }
         }
 
-        // 3. Run Bash validation
-        stage("Bash Validation") {
+        stage('Bash Validation') {
             steps {
-                echo "===== Running Bash validation ====="
-                sh "bash validate.sh"
+                echo '===== Running Bash validation ====='
+                sh 'bash validate.sh'
             }
         }
 
-        // // 4. Run Node.js tests
-        // stage("Run Tests") {
-        //     steps {
-        //         echo "===== Running Node.js tests ====="
-        //         sh "npm test"
-        //     }
-        // }
-
-        // 5. Build Docker image
-        stage("Docker Build") {
+        stage('Docker Compose Build & Run') {
             steps {
-                echo "===== Building Docker image ====="
-
-                sh """
-                    docker build -t node-api:${BUILD_NUMBER} .
-                    docker tag node-api:${BUILD_NUMBER} node-api:latest
-                """
+                echo '===== Building and starting containers ====='
+                // --wait blocks until the healthcheck in docker-compose.yml passes
+                sh 'docker compose up -d --build --remove-orphans --wait'
             }
         }
 
-        // 6. Run Docker container
-        stage("Docker Run") {
+        stage('Verify Deployment') {
             steps {
-                echo "===== Running Docker container ====="
-
-                sh """
-                    docker rm -f node-api-container || true
-
-                    docker run -d \
-                        --name node-api-container \
-                        --restart unless-stopped \
-                        -p 4010:4010 \
-                        node-api:${BUILD_NUMBER}
-                """
-            }
-        }
-
-        // 7. Verify container
-        stage("Verify Deployment") {
-            steps {
-                echo "===== Checking Docker container ====="
-
-                sh """
-                    sleep 5
-
-                    docker ps
-
-                    docker logs node-api-container
-
-                    curl --fail http://localhost:4010/users
-                """
+                echo '===== Verifying deployment ====='
+                sh '''
+                    docker compose ps
+                    curl --fail --silent --show-error \
+                         --retry 5 --retry-delay 2 --retry-connrefused \
+                         "$APP_URL"
+                '''
             }
         }
     }
 
     post {
-
         always {
-            echo "===== Pipeline execution finished ====="
+            echo '===== Pipeline execution finished ====='
         }
-
         success {
-            echo "===== Deployment successful ====="
+            echo '===== Deployment successful ====='
         }
-
         failure {
-            echo "===== Pipeline failed ====="
+            echo '===== Pipeline failed – dumping container logs ====='
+            sh 'docker compose ps || true'
+            sh 'docker compose logs --tail=100 || true'
+            // Uncomment to tear down a failed deployment:
+            // sh 'docker compose down || true'
         }
     }
 }
