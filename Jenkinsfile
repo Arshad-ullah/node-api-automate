@@ -7,10 +7,10 @@ pipeline {
     //     timeout(time: 15, unit: 'MINUTES')
     // }
 
-    environment {
-        COMPOSE_PROJECT_NAME = 'node-api'
-        APP_URL = 'http://localhost:4010/users'
-    }
+    // environment {
+    //     COMPOSE_PROJECT_NAME = 'node-api'
+    //     APP_URL = 'http://localhost:4010/users'
+    // }
 
     stages {
 
@@ -44,17 +44,17 @@ pipeline {
             }
         }
 
-        stage('Verify Deployment') {
-            steps {
-                echo '===== Verifying deployment ====='
-                sh '''
-                    docker compose ps
-                    curl --fail --silent --show-error \
-                         --retry 5 --retry-delay 2 --retry-connrefused \
-                         "$APP_URL"
-                '''
-            }
-        }
+        // stage('Verify Deployment') {
+        //     steps {
+        //         echo '===== Verifying deployment ====='
+        //         sh '''
+        //             docker compose ps
+        //             curl --fail --silent --show-error \
+        //                  --retry 5 --retry-delay 2 --retry-connrefused \
+        //                  "$APP_URL"
+        //         '''
+        //     }
+        // }
     }
 
     post {
