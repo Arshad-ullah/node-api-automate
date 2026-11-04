@@ -2,8 +2,16 @@
   "name": "nodejs-automate",
   "version": "1.0.0",
   "description": "",
+  "homepage": "https://github.com/Arshad-ullah/node-api-automate#readme",
+  "bugs": {
+    "url": "https://github.com/Arshad-ullah/node-api-automate/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arshad-ullah/node-api-automate.git"
+  },
   "license": "ISC",
-  "author": "arshad",
+  "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
