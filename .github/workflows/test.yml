@@ -1,0 +1,9 @@
+name: test-ci
+on: workflow_dispatch
+
+jobs:
+  test-job:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: test
+        run: echo "Hello workd"
