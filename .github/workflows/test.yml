@@ -9,7 +9,8 @@ jobs:
       - name: test
         run: echo "Hello workd"
       - name: secrets
-        run: echo "${{ vars.NUMBER }}" |
-          echo "Testing update" |
-          echo "Mistak done " | 
+        run: |
+          echo "${{ vars.NUMBER }}" 
+          echo "Testing update" 
+          echo "Mistak done " 
           echo "Update value"
