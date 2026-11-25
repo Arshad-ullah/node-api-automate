@@ -7,3 +7,5 @@ jobs:
     steps:
       - name: test
         run: echo "Hello workd"
+      - name: secrets
+        run: echo "${{secrets.EMAIL}}"
