@@ -4,6 +4,7 @@ on: workflow_dispatch
 jobs:
   test-job:
     runs-on: ubuntu-22.04
+    environment: NAME
     steps:
       - name: test
         run: echo "Hello workd"
